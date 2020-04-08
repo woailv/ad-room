@@ -1,5 +1,6 @@
 package com.xy.test;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
@@ -10,6 +11,7 @@ import java.util.List;
 public interface UserDao {
     @Insert
     void insert(User user);
+
     @Query("SELECT * FROM user")
-    List<User> loadAll();
+    LiveData<List<User>> loadAll();
 }

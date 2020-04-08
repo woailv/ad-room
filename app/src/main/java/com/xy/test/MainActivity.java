@@ -1,12 +1,11 @@
 package com.xy.test;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.room.Room;
-import androidx.room.RoomDatabase;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -23,62 +22,69 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         test = Room.databaseBuilder(getApplicationContext(), UserDatabase.class, "test").build();
         textView = findViewById(R.id.textView);
+        final UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         findViewById(R.id.button_add).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new insertAsyncTask(test.userDao()).execute(new User("a"));
+//                new insertAsyncTask(test.userDao()).execute(new User("a"));
+                userViewModel.insert(new User("userDef"));
             }
         });
-        findViewById(R.id.button_list_all).setOnClickListener(new View.OnClickListener() {
+        userViewModel.getUserLiveData().observe(this, new Observer<List<User>>() {
             @Override
-            public void onClick(View v) {
-                new loadAllAsyncTask(test.userDao(),textView).execute();
+            public void onChanged(List<User> users) {
+                String s = "";
+                for (User user : users) {
+                    s += "," + user.name;
+                }
+                textView.setText(String.valueOf(s.length()));
             }
         });
     }
 
-    private static class loadAllAsyncTask extends AsyncTask<Void, Void, List<User>> {
-        UserDao userDao;
-        TextView textView;
-
-        public loadAllAsyncTask(UserDao userDao, TextView textView) {
-            this.userDao = userDao;
-            this.textView = textView;
-        }
-
-        public loadAllAsyncTask(UserDao userDao) {
-            this.userDao = userDao;
-        }
-
-        @Override
-        protected List<User> doInBackground(Void... voids) {
-            return userDao.loadAll();
-        }
-
-        @Override
-        protected void onPostExecute(List<User> users) {
-            super.onPostExecute(users);
-            String s = "";
-            for (User user : users) {
-                s += "," + user.name;
-            }
-            textView.setText(s);
-        }
-    }
-
-    private static class insertAsyncTask extends AsyncTask<User, Void, Void> {
-        UserDao userDao;
-
-        public insertAsyncTask(UserDao userDao) {
-            this.userDao = userDao;
-        }
-
-        @Override
-        protected Void doInBackground(User... users) {
-            for (User user : users) {
-                userDao.insert(user);
-            }
-            return null;
-        }
-    }
+//    private static class loadAllAsyncTask extends AsyncTask<Void, Void, List<User>> {
+//        UserDao userDao;
+//        TextView textView;
+//
+//        public loadAllAsyncTask(UserDao userDao, TextView textView) {
+//            this.userDao = userDao;
+//            this.textView = textView;
+//        }
+//
+//        public loadAllAsyncTask(UserDao userDao) {
+//            this.userDao = userDao;
+//        }
+//
+//        @Override
+//        protected List<User> doInBackground(Void... voids) {
+////            return userDao.loadAll();
+//            return null;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(List<User> users) {
+//            super.onPostExecute(users);
+//            String s = "";
+//            for (User user : users) {
+//                s += "," + user.name;
+//            }
+//            textView.setText(String.valueOf(s.length()));
+//        }
+//    }
+//
+//    private static class insertAsyncTask extends AsyncTask<User, Void, Void> {
+//        UserDao userDao;
+//
+//        public insertAsyncTask(UserDao userDao) {
+//            this.userDao = userDao;
+//        }
+//
+//        @Override
+//        protected Void doInBackground(User... users) {
+//            for (User user : users) {
+//                userDao.insert(user);
+//            }
+//            return null;
+//        }
+//    }
 }
