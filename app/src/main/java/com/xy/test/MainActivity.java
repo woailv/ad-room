@@ -33,8 +33,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        RecyclerView recyclerView = findViewById(R.id.user_list);
+        final RecyclerView recyclerView = findViewById(R.id.user_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new UserListAdapter());
+        final UserListAdapter userListAdapter = new UserListAdapter(userViewModel.getUserLiveData().getValue());
+        recyclerView.setAdapter(userListAdapter);
+        userViewModel.getUserLiveData().observe(this, new Observer<List<User>>() {
+            @Override
+            public void onChanged(List<User> users) {
+                userListAdapter.setUsers(users);
+                userListAdapter.notifyDataSetChanged();
+            }
+        });
     }
 }

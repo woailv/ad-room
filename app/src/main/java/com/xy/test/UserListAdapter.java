@@ -8,7 +8,19 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.List;
+
 public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserViewHolder> {
+    private List<User> users;
+
+    public void setUsers(List<User> users) {
+        this.users = users;
+    }
+
+    public UserListAdapter(List<User> users) {
+        this.users = users;
+    }
+
     @NonNull
     @Override
     public UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -18,13 +30,14 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
 
     @Override
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
-        holder.textView.setText("haha");
+        holder.textView.setText(users.get(position).name);
     }
 
     @Override
     public int getItemCount() {
-        return 5;
+        return users.size();
     }
+
 
     public static class UserViewHolder extends RecyclerView.ViewHolder {
         TextView textView;
