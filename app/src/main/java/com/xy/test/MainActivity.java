@@ -1,5 +1,6 @@
 package com.xy.test;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -8,6 +9,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
@@ -35,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
         final RecyclerView recyclerView = findViewById(R.id.user_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        final UserListAdapter userListAdapter = new UserListAdapter(userViewModel.getUserLiveData().getValue());
+        final UserListAdapter userListAdapter = new UserListAdapter(userViewModel.getUserLiveData().getValue(),userViewModel);
         recyclerView.setAdapter(userListAdapter);
         userViewModel.getUserLiveData().observe(this, new Observer<List<User>>() {
             @Override

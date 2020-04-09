@@ -12,15 +12,13 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class UserViewModel extends AndroidViewModel {
-
-    private LiveData<List<User>> userLiveData;
+    private LiveData<List<User>> userLiveData ;
     private UserDao userDao;
-
     public UserViewModel(@NonNull Application application) {
         super(application);
         userDao = Room.databaseBuilder(application, UserDatabase.class, "test").build().userDao();
         try {
-            userLiveData = new loadAllAsyncTask(userDao).execute().get();
+            userLiveData = new LoadAllAsyncTask(userDao).execute().get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -33,13 +31,31 @@ public class UserViewModel extends AndroidViewModel {
     }
 
     public void insert(User user) {
-        new insertAsyncTask(userDao).execute(user);
+        new InsertAsyncTask(userDao).execute(user);
     }
 
-    private static class loadAllAsyncTask extends AsyncTask<Void,  Void,LiveData<List<User>>> {
+    public void delete(User user) {
+        new DeleteAsyncTask(userDao).execute(user);
+    }
+
+    private static class DeleteAsyncTask extends AsyncTask<User, Void, Void> {
         private UserDao userDao;
 
-        public loadAllAsyncTask(UserDao userDao) {
+        public DeleteAsyncTask(UserDao userDao) {
+            this.userDao = userDao;
+        }
+
+        @Override
+        protected Void doInBackground(User... voids) {
+             userDao.delete(voids[0]);
+             return null;
+        }
+    }
+
+    private static class LoadAllAsyncTask extends AsyncTask<Void, Void, LiveData<List<User>>> {
+        private UserDao userDao;
+
+        public LoadAllAsyncTask(UserDao userDao) {
             this.userDao = userDao;
         }
 
@@ -50,10 +66,10 @@ public class UserViewModel extends AndroidViewModel {
     }
 
 
-    private static class insertAsyncTask extends AsyncTask<User, Void, Void> {
+    private static class InsertAsyncTask extends AsyncTask<User, Void, Void> {
         UserDao userDao;
 
-        public insertAsyncTask(UserDao userDao) {
+        public InsertAsyncTask(UserDao userDao) {
             this.userDao = userDao;
         }
 
